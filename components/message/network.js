@@ -1,20 +1,24 @@
 const express = require('express');
+const multer = require('multer');
 const response = require('../../network/response');
 const router = express.Router();
 const controller = require('./controller');
 
+const upload=multer({
+    dest:'uploads/',
+});
 
 router.get('/', function(req, res){
     console.log(req.headers);
 
-    const filterMessages = req.query.user || null;
+    const filterMessages = req.query.chat || null;
 
     controller.getMessage(filterMessages)
                 .then((messageList) =>{
                     response.success(req, res, messageList, 200);
                 } )
                 .catch(e => {
-                    response.error(req, res, 'Inesperado', 200);
+                    response.error(req, res, 'Inesperado', 500);
                 });
 
 
@@ -31,9 +35,9 @@ router.delete('/:id', function(req, res){
  
 });
 
-router.post('/', function(req, res){
+router.post('/',upload.single('file'), function(req, res){
 
-    controller.addMessage(req.body.user, req.body.message)
+    controller.addMessage(req.body.chat,req.body.user, req.body.message)
             .then((data) => {
                 response.success(req, res, data, 201);
             })

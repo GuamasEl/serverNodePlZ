@@ -1,4 +1,5 @@
 
+const { ReservationList } = require('twilio/lib/rest/taskrouter/v1/workspace/task/reservation');
 const Model = require('./model');
 
 
@@ -14,15 +15,28 @@ function addMessage(message){
 }
 
 async function getMessages(filterUser){
-    //return list;
-    let filter = {};
-    if(filterUser!== null)
+    return new Promise((resolve, reject) =>
     {
-        filter = { user: filterUser}; 
-    }
+        let filter = {};
+        if(filterUser!== null)
+        {
+            filter = { user: filterUser}; 
+        }
+    
+        Model.find(filter)
+                    .populate('user')
+                    .exec((error, populated)=>{
+                        if(error){
+                            reject(error);
+                            return false;
+                        }
 
-    const messages = await Model.find(filter);
-    return messages;
+                        resolve(populated);
+                    });
+               
+
+    });
+    
 
 }
 
