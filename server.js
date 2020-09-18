@@ -1,21 +1,27 @@
 const express = require('express');
+var app = express();
+const server = require('http').Server(app);
+
+const cors = require('cors');
 const bodyParser = require('body-parser');
-//const router = require('./components/message/network');
+const socket = require('./socket');
 const router = require('./network/routes');
 
 const db = require('./db');
 db('mongodb+srv://acanonm:laH2rhNPj7A6SbKC@cluster0.vpohw.mongodb.net/telegrom?retryWrites=true&w=majority');
 
-var app = express();
+app.use(cors);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-//app.use(router);
-
 app.use('/app', express.static('public'));
 
+socket.connect(server);
 router(app);
 
 
-app.listen(3000);
+server.listen(3000,function(){
+    console.log('Escuchando 3000');
+});
+
 console.log('Arranco en 3000'); 
 
